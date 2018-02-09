@@ -2,13 +2,18 @@
 const each = (elements, cb) => {
   // Iterates over a list of elements, yielding each in turn to the `cb` function.
   // This only needs to work with arrays.
-  elements.forEach((item, i) => cb(item, i));
+  for (let i = 0; i < elements.length; i++) {
+    cb(elements[i], i);
+  }
 };
 
 const map = (elements, cb) => {
   // Produces a new array of values by mapping each value in list through a transformation function (iteratee).
   // Return the new array.
-  const newArray = elements.map(e => cb(e));
+  const newArray = [];
+  for (let i = 0; i < elements.length; i++) {
+    newArray.push(cb(elements[i]));
+  }
   return newArray;
 };
 
@@ -33,16 +38,14 @@ const cacheFunction = cb => {
   // If the returned function is invoked with arguments that it has already seen
   // then it should return the cached result and not invoke `cb` again.
   // `cb` should only ever be invoked once for a given set of arguments.
-  const memoized = x => {
-    const cache = {};
-    function callCb() {
-      if (x in cache) {
-        return cache[x];
-      }
-      cb(x);
-      cache[x] = cb(x);
-    }
-    return callCb();
+  const cache = {};
+  return (...args) => {
+    const keys = Object.keys(cache);
+    const argString = args.toString();
+    if (keys.includes(argString)) return cache[argString];
+    const result = cb(...args);
+    cache[argString] = result;
+    return result;
   };
 };
 
@@ -52,8 +55,8 @@ const cacheFunction = cb => {
 const reverseStr = str => {
   // reverse str takes in a string and returns that string in reversed order
   // The only difference between the way you've solved this before and now is that you need to do it recursivley!
-  if (str === '') { return ''; }
-  return reverseStr(str.substr(1)) + str.charAt(0);
+  if (str.length === 0) return '';
+  return reverseStr(str.slice(1)) + str.charAt(0);
 };
 
 const checkMatchingLeaves = obj => {
